@@ -1,0 +1,24 @@
+[package]
+name = "russdns"
+version = "0.1.0"
+edition = "2024"
+description = "A corporate-standard DNS filtering daemon built in Rust"
+
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] } # Async runtime
+trust-dns-proto = "0.22.0" # DNS packet parsing/construction
+serde = { version = "1.0", features = ["derive"] } # Config serialization/deserialization
+toml = "0.7.0" # TOML config format support
+tracing = "0.1.37" # Structured logging
+tracing-subscriber = { version = "0.3.0", features = ["json"] } # Log formatting and dispatch
+anyhow = "1.0" # Flexible error handling
+arc-swap = "1.0" # For atomic, lock-free blocklist updates
+lru = "0.7.0" # For the LRU cache
+# We'll add more dependencies like `notify` for file watching later.
+
+
+
+[[bin]]
+name = "russdns"
+path = "src/main.rs"

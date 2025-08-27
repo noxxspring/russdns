@@ -1,0 +1,8 @@
+# russdns/blocklist.txt
+# This file contains one domain per line.
+# Subdomains of these domains will also be blocked.
+facebook.com
+youtube.com
+twitter.com
+instagram.com
+reddit.com

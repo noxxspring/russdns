@@ -1,0 +1,23 @@
+# russdns/config.toml
+# The IP and port for russdns to listen on.
+listen_addr = "0.0.0.0:53"
+
+# The upstream DNS server to forward the allowed request
+upstream_dns_add = "1.1.1.1:53"
+
+
+# The action to take for blocked requests.
+# Options: "Sinkhole" or "Nxdomain"
+block_action = "Sinkhole"
+
+# The IP address to return for blocked requests if action is "Sinkhole".
+sinkhole_ip = "0.0.0.0"
+
+# Path to the file containing blocked domains, one per line.
+blocklist_file = "./blocklist.txt"
+
+# Path to the log file.
+log_file = "./russdns.log"
+
+# Log level: trace, debug, info, warn, error
+log_level = "info"
