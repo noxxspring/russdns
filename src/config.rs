@@ -1,10 +1,23 @@
 //! Configuration handling for the russdns daemon.
+
+
 use serde::Deserialize;
 use std::fs;
 use std::net::SocketAddr;
 
-use crate::config;
 
+
+/// The action to take when a domain is blocked.
+#[derive(Debug, Deserialize, PartialEq)]
+pub enum BlockAction {
+    /// Respond with a sinkhole IP Address
+    #[serde(alias = "sinkhole", alias = "Sinkhole")]
+    Sinkhole,
+    
+    /// Respond with an NXDOMAIN (non-existent domain) error
+    #[serde(alias = "nxdomain", alias = "Nxdomain")]
+    Nxdomain,
+}
 
 
 /// The main configuration struct for the application.
@@ -37,8 +50,24 @@ pub struct Config{
 impl Config {
     ///Load the configuration from the TOML file at the given path
     pub fn load(path: &str) -> anyhow::Result<Self> {
-        let config_content = fs::read_to_string(path)?;
-        let config: Config = toml::from_str(&config_content)?;
+        let config_content = fs::read_to_string(path)
+        .map_err(|e| anyhow::anyhow!("Failed to read config file '{}' : {}", path, e))?;
+        let config: Config = toml::from_str(&config_content)
+        .map_err(|e| anyhow::anyhow!("Failed to parse config file '{}' : {}", path, e))?;
         Ok(config)
+    }
+
+    // Helper method to parse listen_addr 
+    pub fn listen_socket_addr(&self) -> anyhow::Result<SocketAddr> {
+        self.listen_addr
+        .parse()
+        .map_err(|e| anyhow::anyhow!("Invalid listen address '{}' : {}", self.listen_addr, e))
+    }
+
+    // Helper method to parse upstream_dn_addr
+    pub fn upstream_socket_addr(&self) -> anyhow::Result<SocketAddr> {
+        self.upstream_dns_addr
+        .parse()
+        .map_err(|e| anyhow::anyhow!("Invalid upstream address '{}' : {}", self.upstream_dns_addr, e))
     }
 }
