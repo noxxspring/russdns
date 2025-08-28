@@ -79,6 +79,11 @@ async fn main()-> Result<()> {
 
     // TODO: Step 5: Initialize the resolver with the cache and blocklist
     // let resolver = resolver::Resolver::new(config.upstream_dns_addr, cache, blocklist);
+    // a placeholder resolver
+    let upstream_addr = config.upstream_socket_addr()?;
+    let resolver = resolver::Resolver::new(upstream_addr, cache::DnsCache::new(1000),
+     blocklist::Blocklist::load("./blocklst.txt").unwrap_or_else(|_| blocklist::Blocklist::new_empty()),
+    );
 
     // TODO: Step 6: start the DNS server
     info!("RussDNS daemon starting up....");
@@ -88,11 +93,10 @@ async fn main()-> Result<()> {
     info!("Sinkhole IP {}", config.sinkhole_ip);
     info!("Log file: {:?}", config.log_file);
 
-    // server::start_server(&config.listen_addr, resolver).await?;
+    // Parse the listen address and start the server
+    let listen_addr = config.listen_socket_addr()?;
+    server::start_server(listen_addr, resolver).await?;
 
-    // for now, just sleep to keep the program running so we can see the logs
-    tokio::signal::ctrl_c().await?;
-    info!("Shutdown signal received. Exiting.");
 
     Ok(())
 

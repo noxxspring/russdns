@@ -1,24 +1,27 @@
 //! The core DNS resolution logic.
 
+use std::net::SocketAddr;
+
 use crate::{blocklist::Blocklist, cache::DnsCache};
 
 
 /// Handles the core logic of resolving DNS queries, including
 /// checking the blocklist, cache, and forwarding to upstream.
 pub struct Resolver {
-    upstream_dns_addr: String,
+    upstream_dns_addr: SocketAddr,
     cache: DnsCache,
     blocklist: Blocklist,
 }
 
 impl Resolver {
     /// create a new resolver
-    pub fn new(upstream_dns_addr: String, cache: DnsCache, blocklist: Blocklist) -> Self {
+    pub fn new(upstream_dns_addr: SocketAddr, cache: DnsCache, blocklist: Blocklist) -> Self {
         Self {
             upstream_dns_addr,
             cache,
             blocklist,
         }
+        
     }
     
     /// Resolves a DNS query
