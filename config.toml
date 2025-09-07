@@ -1,9 +1,9 @@
 # russdns/config.toml
 # The IP and port for russdns to listen on.
-listen_addr = "0.0.0.0:53"
+listen_addr = "0.0.0.0:5363"
 
 # The upstream DNS server to forward the allowed request
-upstream_dns_add = "1.1.1.1:53"
+upstream_dns_addr = "1.1.1.1:53"
 
 
 # The action to take for blocked requests.
@@ -20,4 +20,4 @@ blocklist_file = "./blocklist.txt"
 log_file = "./russdns.log"
 
 # Log level: trace, debug, info, warn, error
-log_level = "info"
+log_level = ""

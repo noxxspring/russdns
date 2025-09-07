@@ -71,32 +71,39 @@ async fn main()-> Result<()> {
     debug!("Full config:{:?}", config);
 
     // TODO: Step 3: initialize the blocklist from file
-    info!("Loading blocklist from {}", config.blocklist_file);
-    // let blocklist = blocklist::Blocklist::load(&config.blocklist_file)?;
+    info!("Loading blocklist from {}", config.blocklist_file.display());
+    let blocklist = blocklist::Blocklist::load(&config.blocklist_file.to_string_lossy())?;
 
     // TODO: Step 4 - Initialize the cache
-    // let cache = cache::DnsCache::new(1000); // Example: 1000 item cache
+     let cache = cache::DnsCache::new(1000); // Example: 1000 item cache
 
-    // TODO: Step 5: Initialize the resolver with the cache and blocklist
-    // let resolver = resolver::Resolver::new(config.upstream_dns_addr, cache, blocklist);
-    // a placeholder resolver
+
+       // Step 5 - Extract all needed values from config BEFORE moving anything
+    let listen_addr = config.listen_socket_addr()?;
     let upstream_addr = config.upstream_socket_addr()?;
-    let resolver = resolver::Resolver::new(upstream_addr, cache::DnsCache::new(1000),
-     blocklist::Blocklist::load("./blocklst.txt").unwrap_or_else(|_| blocklist::Blocklist::new_empty()),
-    );
+    let block_action = config.block_action;
+    let sinkhole_ip = config.sinkhole_ip;
+    let log_file_display = config.log_file.display().to_string(); // Convert to String for logging
 
-    // TODO: Step 6: start the DNS server
-    info!("RussDNS daemon starting up....");
+    // Step 6 - Log the configuration
+    info!("RussDNS daemon starting up...");
     info!("Server will listen on: {}", config.listen_addr);
     info!("Upstream DNS server: {}", config.upstream_dns_addr);
-    info!("Block action: {}", config.block_action);
-    info!("Sinkhole IP {}", config.sinkhole_ip);
-    info!("Log file: {:?}", config.log_file);
+    info!("Block action: {}", block_action);
+    info!("Sinkhole IP: {}", sinkhole_ip);
+    info!("Log file: {}", log_file_display);
 
-    // Parse the listen address and start the server
-    let listen_addr = config.listen_socket_addr()?;
+    // Step 7 - Initialize the resolver with the cache and blocklist
+    let resolver = resolver::Resolver::new(
+        upstream_addr,
+        cache,
+        blocklist,
+        block_action,       
+        sinkhole_ip,        
+    );
+
+    // Step 8 - Start the DNS server
     server::start_server(listen_addr, resolver).await?;
-
 
     Ok(())
 

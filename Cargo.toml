@@ -15,8 +15,6 @@ tracing-subscriber = { version = "0.3.0", features = ["json"] } # Log formatting
 anyhow = "1.0" # Flexible error handling
 arc-swap = "1.0" # For atomic, lock-free blocklist updates
 lru = "0.7.0" # For the LRU cache
-# We'll add more dependencies like `notify` for file watching later.
-
 
 
 [[bin]]
